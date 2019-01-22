@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import MapGL, {Marker, Popup, NavigationControl} from 'react-map-gl';
 import { cloneDeep } from 'lodash';
+import {geolocated} from 'react-geolocated';
 
 class App extends Component {
 
@@ -11,17 +12,29 @@ class App extends Component {
       latitude: 37.78,
       longitude: -122.41,
       zoom: 15
-    }
+    },
   };
 
   onChangePlace = () => {
       let viewport = cloneDeep(this.state.viewport);
       viewport.latitude = 37.89;
       viewport.longitude = -122.5;
+      viewport.width = 500;
+      viewport.height = 500;
       this.setState({viewport});
   }
 
+  getCurrentLocation = () => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      let viewport = cloneDeep(this.state.viewport);
+      viewport.longitude = position.coords.longitude;
+      viewport.latitude = position.coords.latitude;
+      this.setState({viewport})
+    });
+  }
+
   render() {
+    this.getCurrentLocation();
     return (
       <div>
         <MapGL
@@ -37,10 +50,10 @@ class App extends Component {
         <button
           onClick={this.onChangePlace}
         >
-          chenge place
+          chenge stuff
         </button>
+        <div>your current location is : longitude > {this.state.viewport.longitude} / latitude : {this.state.viewport.latitude}</div>
       </div>
-
     );
   }
 }
